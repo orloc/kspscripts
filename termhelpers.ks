@@ -18,14 +18,11 @@ function refreshline {
         line,
         offset,
         content.
-    
     local clearstring is " ".
     local targetlength is terminal:width - offset.
-
     from { local slength is 1. } until slength = targetlength step { set slength to slength + 1. } do { 
         set clearstring to clearstring + " ".
     }.
-
     PRINT clearstring at (offset, line).
     PRINT content at (offset, line).
 }.
