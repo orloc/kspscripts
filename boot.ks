@@ -25,8 +25,10 @@ clearscreen. print "Waiting a few moments before initialization". wait 2.
 set updatescript to ship:name:tolower:replace(" ", "_") + ".ks".
 print "Trying to load : " + updatescript. wait 1.
 if addons:rt:hasconnection(ship) { 
-    if hasfile(updatescript, 0) { 
-        download(updatescript). print "File Downloaded". wait 0.5. if hasfile("update.ks", 1) { delete update.ks. }. rename updatescript to "update.ks". run update.ks. delete update.ks. print "File Loaded". wait 0.5.
+    if altitude < 10000 { // only when we are on the ground. 
+        if hasfile(updatescript, 0) { 
+            download(updatescript). print "File Downloaded". wait 0.5. if hasfile("update.ks", 1) { delete update.ks. }. rename updatescript to "update.ks". run update.ks. delete update.ks. print "File Loaded". wait 0.5.
+        }.
     }.
 }.
 clearscreen. print "ERROR - falling back". wait 0.5.

@@ -1,39 +1,41 @@
 @LAZYGLOBAL off.
-global prev_thrust is 0.
+global pthrust is 0.
 global trotation is r(0,0,0).
 function adjust_pitch {
-    parameter start_pitch,desired_pitch, dir.
-    local initial_heading is start_pitch.
+    parameter sp,dp, dir.
+    local ih is sp.
     until false {
         if check_stage_fuel(stage:solidfuel) = true  { print "Staging...". wait 0.5. stage. wait 1. }.
-        set prev_thrust to maxthrust. if initial_heading = desired_pitch { break. }.
-        set initial_heading to initial_heading - 0.5. lock steering to trotation + heading(dir, initial_heading).
-        refreshline(0, terminal:width - 19, "Target Heading: " + initial_heading). 
-        refreshline(1, terminal:width - 19, "Current Q: " + ship:q). wait 0.2.
+        set pthrust to maxthrust. if ih = dp { break. }.
+        set ih to ih - 0.5. lock steering to trotation + heading(dir, ih).
+        update_diag(ih).
     }.
+}.
+function update_diag { 
+        parameter th.
+        rline(15, terminal:width - 25, "Target Heading: " + th). rline(16, terminal:width - 25, "Current Q: " + round(ship:q,4)). wait 0.2.
 }.
 function init_assent {
     parameter init_heading, dir.
-    set prev_thrust to ship:availablethrust. 
+    set pthrust to ship:availablethrust. 
     SAS on. STAGE. wait 1.
-    if (ship:availablethrust <= prev_thrust) { abort("Main engine FAILURE."). }. refreshline(0, 9, "Main engine ingintion."). wait 1. STAGE. wait 0.5.
-    refreshline(0, 9, "Booster ingintion, Steering Engaged."). refreshline(2, 0, "Target Heading: " + init_heading).
-    lock steering to trotation + heading(dir, init_heading).
+    if (ship:availablethrust <= pthrust) { abort("Main engine FAILURE."). }. rline(0, 9, "Main engine ingintion."). wait 1. STAGE. wait 0.5.
+    rline(0, 9, "Booster ingintion, Steering Engaged.").
+    update_diag(init_heading).
 }.
 function execute_profile {
-    parameter initial_heading, dir, profiles.
-    local moves is profiles:length.
+    parameter ih, dir, profs.
+    local moves is profs:length.
     from { local x is 0. } until x = moves step { set x to x + 3. } do {
-        wait until altitude > profiles[x] and velocity:surface:mag > profiles[x+2]. refreshline(0, 9, "Starting Move " +  ((x / 3) + 1) + "/" + (moves / 3)).
-        if x <> 0 { set initial_heading to profiles[x-2]. }.
-        adjust_pitch(initial_heading, profiles[x+1], dir). refreshline(0, 9, "Move " +  ((x / 3) + 1) + "/" + (moves / 3)+ " complete.").
+        wait until altitude > profs[x] and velocity:surface:mag > profs[x+2]. rline(0, 9, "Starting Move " +  ((x / 3) + 1) + "/" + (moves / 3)).
+        if x <> 0 { set ih to profs[x-2]. }. adjust_pitch(ih, profs[x+1], dir). rline(0, 9, "Move " +  ((x / 3) + 1) + "/" + (moves / 3)+ " complete.").
     }.
 }.
 function check_stage_fuel {
     parameter fuel.
-    if fuel < 0.1 and maxthrust < prev_thrust - 10 { wait 1. return true.}. return false.
+    if fuel < 0.1 and maxthrust < pthrust - 10 { wait 1. return true.}. return false.
 }.
 function abort { 
     parameter message.
-    refreshline(0, 9, message). notify("Ending Program and shutting down in 2 seconds."). set thrott to 0. wait 2. SHUTDOWN.
+    rline(0, 9, message). notify("Ending Program and shutting down in 2 seconds."). set thrott to 0. wait 2. SHUTDOWN.
 }.

@@ -7,12 +7,10 @@ function notify {
 
 function countdown {
     parameter param.
-    from { local x is param . } until x = 0 step { set x to x - 1. } do {
-        refreshline(6,0,"Launch in T-" + x ). wait 1.
-    }. refreshline(6,0," ").
+    from { local x is param . } until x = 0 step { set x to x - 1. } do { rline(3,0,"Launch in T-" + x ). wait 1.}. 
 }.
 
-function refreshline {
+function rline {
     parameter line, offset, content.
     local clearstring is " ". local targetlength is terminal:width - offset.
     from { local slength is 1. } until slength = targetlength step { set slength to slength + 1. } do { 
