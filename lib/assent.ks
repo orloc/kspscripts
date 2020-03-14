@@ -29,16 +29,15 @@ function init_assent {
     parameter init_heading, dir.
     set pthrust to ship:availablethrust. 
     SAS on. 
+    lock throttle to 1.
+    wait 1.
     STAGE. 
     wait 1.
     if (ship:availablethrust <= pthrust) { 
         abort("Main engine FAILURE."). 
     }. 
     rline(0, 9, "Main engine ingintion."). 
-    wait 1. 
     STAGE. 
-    wait 0.5.
-    rline(0, 9, "Booster ingintion, Steering Engaged.").
     update_diag(init_heading).
 }.
 

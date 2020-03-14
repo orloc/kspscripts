@@ -6,7 +6,7 @@ function notify {
 function countdown {
     parameter param.
     from { local x is param . } until x = 0 step { set x to x - 1. } do { 
-        rline(3,0,"Launch in T-" + x ). 
+        rline(0,9,"Launch in T-" + x ). 
         wait 1.
     }. 
 }.
